@@ -5,35 +5,25 @@
 *Membres du groupe* : 
 
 * Anas AMAZOUZ
-* Dunvael LE ROUX
 * Abdelmounaim EL HOUZI
+* Dunvael LE ROUX
 
 *Lien du kanban* : <https://trello.com/invite/b/6914676875effe805916fb75/ATTI787a959b552291903e206cdf8a69b3aa22FDC4AC/kanban-equipe>
 
 ---
 
-Structure du projet
+## Structure du projet
+
+### Prérequis
+
+### Architecture globale/Typologie
+
+### Fichiers du projet
+
+### Étapes
 
 ---
 
-Architecture globale
+## Commandes utiles
 
 ---
-
-Fichiers du projet
-
----
-
-Prérequis
-
----
-
-Étapes
-
----
-
-Commandes utiles
-
----
-
-
