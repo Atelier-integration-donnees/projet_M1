@@ -18,7 +18,7 @@
 
 #### Outils
 
-Outils nécessaires au brief
+*Outils nécessaires au brief*
 
 * ETL Apache Spark
 * Python
@@ -29,8 +29,10 @@ Outils nécessaires au brief
 
 #### Choix techniques
 
-Justification des technbologies et outils utilisés
-Trello Kanban
+Justification des technologies et outils utilisés
+
+Suivi des tâches dans l'équipe réalisé avec Trello : <https://trello.com/invite/b/6914676875effe805916fb75/ATTI787a959b552291903e206cdf8a69b3aa22FDC4AC/kanban-equipe>
+
 
 ### Architecture du projet
 
@@ -57,7 +59,7 @@ par code-barres et choix de la langue (fr > en > fallback).
 
 * Repo (Git) structuré => docs (README, data-dictionary, schémas), /etl (code Spark), /sql
 (DDL/DML), /tests, /conf.
-* *ipeline Spark reproductible : initial load (export complet). Log des métriques de
+* Pipeline Spark reproductible : initial load (export complet). Log des métriques de
 qualité.
 * Datamart MySQL (étoile ou flocon contrôlé) + scripts DDL/DML.
 * Cahier de qualité : règles, coverage, anomalies, before/after.
@@ -66,6 +68,37 @@ qualité.
 
 ---
 
+## Critères d'évaluations (100 points)
+
+* Collecte & incrémental (20) : bulk, idempotence.
+* Qualité & métriques (20) : règles solides, reporting clair, anomalies expliquées.
+* Modèles Datamarts (20) : étoiles cohérentes, clés, index.
+* ETL Spark (25) : code clair/testé, perfs (partitionnement, broadcast), upserts
+maîtrisés.
+* Analytique SQL (10) : requêtes pertinentes, résultats commentés.
+* Docs & reproductibilité (5) : README, schémas, how-to run, journal des prompts.
+
+### Bonus
+
+* Conformité multilingue : résolution des noms produit/catégorie par priorité de langue
+* Détection d’anomalies (exemple : IQR) sur nutriments
+* **Petit dashboard (connecté à MySQL)**
+* Historisation
+
+---
+
 ## Commandes utiles
+
+### How to run
+
+Donner les droits d'exécution au script de déploiement automatique :
+
+`chmod +x [NomScript]`
+
+Lancer le script de déploiement automatique :
+
+`...`
+
+### Débuggage/Vérifications
 
 ---
