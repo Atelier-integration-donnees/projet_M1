@@ -10,6 +10,8 @@
 
 *Lien du kanban* : <https://trello.com/invite/b/6914676875effe805916fb75/ATTI787a959b552291903e206cdf8a69b3aa22FDC4AC/kanban-equipe>
 
+*Lien Edensia pour joindre livrables* : <https://flow.edensia.com/login>
+
 ---
 
 ## Structure du projet
