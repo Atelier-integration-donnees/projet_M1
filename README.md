@@ -70,6 +70,7 @@ Les dépendances sont listées dans le fichier *requirements.txt* et peuvent êt
 
 ### Structure du dépôt
 
+```
 projet_M1/
 │
 ├── conf/
@@ -151,6 +152,7 @@ projet_M1/
 │
 └── Projet_Atelier_Intégration_des_Données_25-26.pdf
     # Sujet et consignes du projet
+```
 
 ---
 
