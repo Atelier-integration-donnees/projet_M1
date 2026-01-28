@@ -46,7 +46,7 @@ Chaque couche correspond à une étape fonctionnelle du pipeline et produit des 
 
 ---
 
-##" Prérequis
+### Prérequis
 
 **Outils**
 
@@ -78,8 +78,16 @@ projet_M1/
 │
 ├── docs/
 │   ├── 1_Bronze.md
-│   └── 2_Silver.md
-│       # Documentation fonctionnelle des étapes Bronze et Silver
+│   │   # Documentation fonctionnelle de la couche Bronze
+│   │
+│   ├── 2_Silver.md
+│   │   # Documentation fonctionnelle de la couche Silver
+│   │
+│   ├── data-dictionary.md
+│   │   # Dictionnaire de données du datamart (tables, colonnes, types, règles)
+│   │
+│   └── schema-etoile.md
+│       # Schéma du modèle décisionnel en étoile (fact & dimensions)
 │
 ├── etl/
 │   ├── 1_Bronze.py
@@ -199,19 +207,11 @@ Sorties de qualité produites par le pipeline (Silver et Gold).
   Copies des documentations générées pour les couches Bronze et Silver.
 
 **/docs**
-Documentation fonctionnelle détaillée des étapes du pipeline.
-
-* 1_Bronze.md
-  Description de l’étape Bronze :
-  * règles appliquées
-  * choix techniques
-  * contrôles qualité
-
-* **2_Silver.md**
-  Description détaillée de l’étape Silver :
-  * règles de nettoyage
-  * logique de déduplication
-  * normalisation des données
+Documentation fonctionnelle et décisionnelle du projet.
+* **1_Bronze.md** : description de l’étape Bronze (ingestion, choix techniques, règles de qualité)
+* **2_Silver.md** : description de l’étape Silver (nettoyage, normalisation, déduplication)
+* **data-dictionary.md** : dictionnaire de données du datamart (tables, colonnes, types, clés)
+* **schema-etoile.md** : schéma du modèle décisionnel en étoile (table de faits, dimensions, relations)
 
 **/tests**
 Tests unitaires pour chaque couche (Bronze, Silver, Gold).
@@ -296,15 +296,19 @@ mysql -u <user> -p <database> < sql/queries_analysis.sql
 
 ## Correspondance avec les étapes du projet
 
-| Étape pédagogique         | Scripts / livrables associés               |
-| ------------------------- | ------------------------------------------ |
-| Collecte                  | `1_Bronze.py`                              |
-| Nettoyage / normalisation | `2_silver.py`                              |
-| Qualité des données       | `metrics_silver.json`, `gold_metrics.json` |
-| Modélisation              | `3_gold.py`, `ddl.sql`                     |
-| Chargement MySQL          | `3_gold.py`                                |
-| Analytique SQL            | `queries_analysis.sql`                     |
-| Reporting                 | `dashboard.py`                             |
-| Documentation             | `/docs`, `README.md`                       |
+| Étape pédagogique         | Scripts / livrables associés                                    |
+| ------------------------- | --------------------------------------------------------------- |
+| Collecte                  | `1_Bronze.py`                                                   |
+| Nettoyage / normalisation | `2_silver.py`                                                   |
+| Qualité des données       | `metrics_silver.json`, `gold_metrics.json`                      |
+| Modélisation              | `3_gold.py`, `ddl.sql`                                          |
+| Chargement MySQL          | `3_gold.py`                                                     |
+| Analytique SQL            | `queries_analysis.sql`                                          |
+| Reporting                 | `dashboard.py`                                                  |
+| Documentation             | `/docs`, `README.md`, `data-dictionary.md`, `schema-etoile.md`  |
+
+*Les éléments de modélisation et de documentation détaillée (dictionnaire de données et schéma décisionnel) sont disponibles dans le dossier `/docs`.*
+
+Ce README fournit l’ensemble des informations nécessaires à la compréhension, à l’exécution et à l’évaluation du projet.
 
 ---
