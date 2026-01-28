@@ -1,0 +1,14 @@
+[
+    {
+        "run_date": "2026-01-28T18:34:44.867962",
+        "layer": "Silver",
+        "input_rows": 50000,
+        "after_dedup": 49999,
+        "invalid_flagged": 49999,
+        "coverage_score": 0.0,
+        "anomalies_rate": 100.0,
+        "invalid_rate": 100.0,
+        "missing_rate": 100.0,
+        "execution_sec": 21.8
+    }
+]
