@@ -129,3 +129,67 @@ Gold (MySQL)
 * Limitation volumétrique (limit(50000)) en environnement local
 * Conversion vers Apache Parquet
 
+9.2 Couche Silver — Transformation et qualité
+
+* Normalisation des noms de colonnes (snake_case)
+* Cast explicite des types numériques
+* Nettoyage textuel (trim, lowercase)
+* Null safety (valeurs par défaut pour dimensions)
+* Règles qualité :
+  * déduplication par code
+  * exclusion sugars_100g > 100
+* Génération d’un hash MD5 (row_hash) pour le SCD2
+
+9.3 Couche Gold — Chargement et historisation (SCD2)
+
+* Comparaison des empreintes (hash_diff)
+* Logique d’upsert :
+  * hash identique → aucune action
+  * hash différent → clôture + nouvelle version
+* Écriture JDBC batchée vers MySQL
+
+---
+
+10. Modélisation décisionnelle (Gold)
+
+**Table de faits** : fact_nutrition_snapshot
+* 1 ligne = 1 version produit × 1 date
+* Stockage des mesures nutritionnelles et des scores qualité
+* Clés étrangères vers les dimensions
+
+**Dimensions**
+* dim_product (SCD Type 2)
+* dim_brand
+* dim_category
+* dim_country
+* dim_time
+Relations assurées par clés étrangères, respect du schéma étoile.
+
+---
+
+11. Infrastructure et déploiement
+
+* MySQL 8.0 conteneurisé (Docker)
+* Persistance via volume Docker
+* Initialisation automatique via scripts SQL
+* Spark exécuté en mode local (scale-out compatible)
+
+---
+
+12. Métriques et reporting
+
+À chaque exécution, un rapport JSON est généré contenant :
+* nombre de lignes lues / rejetées,
+* nombre de créations vs mises à jour (SCD2),
+* anomalies critiques détectées.
+
+---
+
+13. Conclusion
+
+Cette architecture permet :
+
+* une analyse nutritionnelle fiable,
+* une historisation complète des produits,
+* une traçabilité de la qualité des données,
+* une extensibilité vers des dashboards décisionnels.
