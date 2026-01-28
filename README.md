@@ -21,6 +21,7 @@
 * ETL Apache Spark
 * Python
 * MySQL
+* Docker Desktop
 * Export de données : https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz
 * Lien de la page : https://fr.openfoodfacts.org/data
 * GitHub
