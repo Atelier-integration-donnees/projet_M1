@@ -1,8 +1,8 @@
 # Repo projet_M1 : Intégration des données
 
-*Formateur* : Benoît Gerald
+**Formateur** : Benoît Gerald
 
-*Membres du groupe* : 
+**Membres du groupe** : 
 
 * Anas AMAZOUZ
 * Abdelmounaim EL HOUZI
@@ -12,126 +12,299 @@
 
 ---
 
-## Structure du projet
+## Objectifs du projet
 
-### Prérequis
+Ce projet a pour objectif de mettre en place une chaîne complète d’intégration de données afin de construire un datamart analytique à partir des données publiques OpenFoodFacts.
 
-#### Outils
+L’ETL est implémenté à l’aide d’Apache Spark (PySpark) pour le traitement distribué des données, tandis que MySQL est utilisé comme base relationnelle cible pour l’analyse décisionnelle.
 
-* ETL Apache Spark
+Le pipeline suit une architecture Bronze / Silver / Gold, permettant de séparer clairement :
+
+* l’ingestion des données brutes,
+* le nettoyage et la normalisation,
+* la modélisation analytique et le chargement final.
+
+---
+
+## Architecture générale
+
+```
+OpenFoodFacts (CSV)
+        ↓
+      Bronze
+        ↓
+      Silver
+        ↓
+      Gold
+        ↓
+   Datamart MySQL
+        ↓
+ SQL Analytics / Dashboard
+```
+
+Chaque couche correspond à une étape fonctionnelle du pipeline et produit des jeux de données ainsi que des métriques de qualité associées.
+
+---
+
+##" Prérequis
+
+**Outils**
+
+* Apache Spark (PySpark)
 * Python
-* MySQL
+* MySQL 8
 * Docker Desktop
-* Export de données : https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz
-* Lien de la page : https://fr.openfoodfacts.org/data
 * GitHub
-* IDE pour clôner le répertoire et exécuter le code/script
+* IDE pour cloner le dépôt et exécuter les scripts
 
-#### Dépendances Python
+**Sources de données**
 
-* Installation avec le fichier *requirements.txt*
+* Export OpenFoodFacts (bulk CSV) : <https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz>
+* Page officielle OpenFoodFacts : <https://fr.openfoodfacts.org/data>
 
-### Architecture du projet
+**Dépendances Python**
 
-Le projet consiste à créer une chaîne d’intégration de données pour construire un datamart analytique à partir des données OpenFoodFacts, en exploitant Apache Spark (Java ou PySpark) pour l’ETL et MySQL pour le datamart relationnel.
-
-#### Typologie
-
-#### Architecture & contraintes
-
-* Ingestion (Bronze) : lire JSON (ou CSV). Extractions des champs clefs (code, noms,
-nutriments 100g, tags…).
-* Conformation (Silver) : normaliser types/units, flatten des structures, dédoublonnage
-par code-barres et choix de la langue (fr > en > fallback).
-* Modélisation (Gold) : tables dimensionnelles + fact table(s)=> Cible : MySQL 8 via Spark JDBC.
-* Qualité : produire des métriques (complétude, unicité, cohérence, référentiels) et rapports (CSV/JSON + tableau de bord SQL).
-
-#### Fichiers du projet
+Les dépendances sont listées dans le fichier *requirements.txt* et peuvent être installées automatiquement.
 
 ---
 
-### Étapes principales du projet
+### Structure du dépôt
 
-1. Compréhension du contexte et cadrage
-
-
-
-2. Collecte et préparation des données
-
-
-
-3. Nettoyage et normalisation
-
-
-
-4. Modélisation des données
-
-
-
-5. Chargement dans le datamart
-
-
-6. Qualité et reporting
-
-
-
-7. Analytique SQL
-
-
-
-8. Documentation et livrables
-
-* Préparer le README du projet, data-dictionary, schémas de données, documentation d’exécution et prompts.
-* Déposer dans un repo Git structuré.
+projet_M1/
+│
+├── conf/
+│   └── settings.py
+│       # Paramètres globaux du projet (DB, chemins, constantes)
+│
+├── docs/
+│   ├── 1_Bronze.md
+│   └── 2_Silver.md
+│       # Documentation fonctionnelle des étapes Bronze et Silver
+│
+├── etl/
+│   ├── 1_Bronze.py
+│   │   # Ingestion des données OpenFoodFacts (couche Bronze)
+│   │
+│   ├── 2_silver.py
+│   │   # Nettoyage, normalisation et déduplication (couche Silver)
+│   │
+│   ├── 3_gold.py
+│   │   # Modélisation, création du datamart et chargement MySQL (couche Gold)
+│   │
+│   ├── check_silver_schema.py
+│   │   # Vérification de la conformité du schéma Silver
+│   │
+│   └── clean_db.py
+│       # Nettoyage / réinitialisation des tables MySQL
+│
+├── jars/
+│   └── mysql-connector-j-8.2.0.jar
+│       # Driver JDBC MySQL utilisé par Spark
+│
+├── logs/
+│   ├── metrics_silver.json
+│   │   # Métriques de qualité calculées après l’étape Silver
+│   │
+│   ├── gold_metrics.json
+│   │   # Métriques de qualité finales après l’étape Gold
+│   │
+│   └── docs/
+│       ├── 1_Bronze.md
+│       └── 2_Silver.md
+│           # Documentation liée aux métriques
+│
+├── sql/
+│   ├── ddl.sql
+│   │   # Création du schéma du datamart (dimensions, faits, index)
+│   │
+│   └── queries_analysis.sql
+│       # Requêtes analytiques SQL
+│
+├── tests/
+│   ├── 1_test_bronze.py
+│   ├── 2_test_silver.py
+│   └── 3_test_gold.py
+│       # Tests unitaires des différentes couches
+│
+├── dashboard.py
+│   # Script de visualisation connecté au datamart MySQL
+│
+├── docker-compose.yml
+│   # Déploiement de l’environnement MySQL via Docker
+│
+├── requirements.txt
+│   # Dépendances Python du projet
+│
+├── reset_db.py
+│   # Réinitialisation complète de la base MySQL
+│
+├── README.md
+│   # Documentation principale du projet
+│
+└── Projet_Atelier_Intégration_des_Données_25-26.pdf
+    # Sujet et consignes du projet
 
 ---
 
-## Livrables attendus
+### Choix techniques
 
-* Repo (Git) structuré => docs (README, data-dictionary, schémas), /etl (code Spark), /sql
-(DDL/DML), /tests, /conf.
-* Pipeline Spark reproductible : initial load (export complet). Log des métriques de
-qualité.
-* Datamart MySQL (étoile ou flocon contrôlé) + scripts DDL/DML.
-* Cahier de qualité : règles, coverage, anomalies, before/after.
-* Jeu de requêtes analytiques (SQL) répondant à des questions métiers.
-* Note d’architecture : choix techniques, schémas, stratégie d’upsert.
+* Apache Spark (PySpark) pour le traitement distribué de grands volumes de données
+* Architecture Bronze / Silver / Gold pour structurer les étapes de transformation
+* MySQL comme datamart relationnel pour l’analyse SQL
+* Docker pour assurer la reproductibilité de l’environnement
+* JDBC pour le chargement des données Spark vers MySQL
 
 ---
 
-## Critères d'évaluations (100 points)
+### Architecture & contraintes fonctionnelles
 
-* Collecte & incrémental (20) : bulk, idempotence.
-* Qualité & métriques (20) : règles solides, reporting clair, anomalies expliquées.
-* Modèles Datamarts (20) : étoiles cohérentes, clés, index.
-* ETL Spark (25) : code clair/testé, perfs (partitionnement, broadcast), upserts
-maîtrisés.
-* Analytique SQL (10) : requêtes pertinentes, résultats commentés.
-* Docs & reproductibilité (5) : README, schémas, how-to run, journal des prompts.
+* Bronze : ingestion des données CSV OpenFoodFacts et extraction des champs principaux
+* Silver : normalisation des types et unités, flatten des structures, déduplication par code-barres et gestion des langues (priorité fr > en > fallback)
+* Gold : modélisation en étoile (dimensions + table(s) de faits) et chargement dans MySQL
+* Qualité : calcul de métriques de complétude, unicité et cohérence, avec génération de rapports JSON
 
-### Bonus
-
-* Conformité multilingue : résolution des noms produit/catégorie par priorité de langue
-* Détection d’anomalies (exemple : IQR) sur nutriments
-* **Petit dashboard (connecté à MySQL)**
-* Historisation
+Les métriques de qualité permettent d’évaluer l’impact des transformations entre les différentes couches et d’identifier les anomalies potentielles dans les données nutritionnelles.
 
 ---
 
-## Commandes utiles
+### Organisation des fichiers
 
-### How to run
+**/conf**
+Contient les fichiers de configuration globaux.
+* **settings.py** : paramètres MySQL, chemins d’entrée/sortie, constantes partagées
 
-Donner les droits d'exécution au script de déploiement automatique :
+**/etl**
+Scripts ETL Spark correspondant aux différentes couches.
+* **1_Bronze.py** : ingestion des données OpenFoodFacts
+* **2_silver.py** : nettoyage, normalisation et calcul des métriques Silver
+* **check_silver_schema.py** : validation du schéma Silver
+* **3_gold.py** : modélisation analytique et chargement MySQL
+* **clean_db.py** : nettoyage des tables MySQL
 
-`chmod +x [NomScript]`
+**/sql**
+Scripts SQL exécutés sur le datamart.
+* **ddl.sql** : création du schéma relationnel
+* **queries_analysis.sql** : requêtes analytiques finales
 
-Lancer le script de déploiement automatique :
+**/logs**
+Sorties de qualité produites par le pipeline (Silver et Gold).
+* **metrics_silver.json**
+  Rapport de qualité après l’étape Silver :
+  * complétude
+  * unicité
+  * cohérence
+* **gold_metrics.json**
+  Rapport de qualité final après chargement Gold / MySQL
+* **/docs**
+  Copies des documentations générées pour les couches Bronze et Silver.
 
-`. [NomScript].sh`
+**/docs**
+Documentation fonctionnelle détaillée des étapes du pipeline.
 
-### Vérifications/Tests
+* 1_Bronze.md
+  Description de l’étape Bronze :
+  * règles appliquées
+  * choix techniques
+  * contrôles qualité
 
+* **2_Silver.md**
+  Description détaillée de l’étape Silver :
+  * règles de nettoyage
+  * logique de déduplication
+  * normalisation des données
 
+**/tests**
+Tests unitaires pour chaque couche (Bronze, Silver, Gold).
+* **1_test_bronze.py** : tests sur l’ingestion Bronze
+* **2_test_silver.py** : tests sur la conformation Silver
+* **3_test_gold.py** : tests sur la modélisation et le chargement Gold
+
+**Autres fichiers à la racine**
+
+* **dashboard.py**
+  Script de visualisation / tableau de bord :
+  * connexion à MySQL
+  * affichage des indicateurs analytiques (bonus dashboard)
+* **docker-compose.yml**
+  Déploiement de l’environnement MySQL via Docker.
+* **requirements.txt**
+  Liste des dépendances Python nécessaires au projet.
+* **reset_db.py**
+  Script de réinitialisation complète de la base MySQL.
+
+---
+
+## Ordre d’exécution du projet
+
+1. Démarrage de l’environnement
+* Lancer MySQL via Docker
+* Installer les dépendances Python
+
+2. Initialisation de la base
+* Exécuter le script `ddl.sql`
+* Optionnel : exécuter `reset_db.py`
+
+3. Pipeline ETL Spark
+* `1_Bronze.py`
+* `2_silver.py`
+* `check_silver_schema.py`
+* `3_gold.py`
+
+4. Analytique SQL
+* Exécuter `queries_analysis.sql`
+
+5. Dashboard (optionnel)
+* Lancer `dashboard.py`
+
+---
+
+## How to run
+
+**Installation des dépendances**
+
+```Bash
+pip install -r requirements.txt
+```
+
+**Lancer MySQL**
+
+```Bash
+docker-compose up -d
+```
+
+**Création du schéma**
+
+```Bash
+mysql -u <user> -p <database> < sql/ddl.sql
+```
+
+**Exécution du pipeline Spark**
+
+```Bash
+spark-submit etl/1_Bronze.py
+spark-submit etl/2_silver.py
+spark-submit etl/3_gold.py
+```
+
+**Analytique SQL**
+
+```Bash
+mysql -u <user> -p <database> < sql/queries_analysis.sql
+```
+
+---
+
+## Correspondance avec les étapes du projet
+
+| Étape pédagogique         | Scripts / livrables associés               |
+| ------------------------- | ------------------------------------------ |
+| Collecte                  | `1_Bronze.py`                              |
+| Nettoyage / normalisation | `2_silver.py`                              |
+| Qualité des données       | `metrics_silver.json`, `gold_metrics.json` |
+| Modélisation              | `3_gold.py`, `ddl.sql`                     |
+| Chargement MySQL          | `3_gold.py`                                |
+| Analytique SQL            | `queries_analysis.sql`                     |
+| Reporting                 | `dashboard.py`                             |
+| Documentation             | `/docs`, `README.md`                       |
 
 ---
