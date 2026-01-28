@@ -8,8 +8,6 @@
 * Abdelmounaim EL HOUZI
 * Dunvael LE ROUX
 
-*Lien du kanban* : <https://trello.com/invite/b/6914676875effe805916fb75/ATTI787a959b552291903e206cdf8a69b3aa22FDC4AC/kanban-equipe>
-
 *Lien Edensia pour joindre livrables* : <https://flow.edensia.com/login>
 
 ---
@@ -20,21 +18,17 @@
 
 #### Outils
 
-*Outils nécessaires au brief*
-
 * ETL Apache Spark
 * Python
 * MySQL
 * Export de données : https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz
 * Lien de la page : https://fr.openfoodfacts.org/data
 * GitHub
+* IDE pour clôner le répertoire et exécuter le code/script
 
-#### Choix techniques
+#### Dépendances Python
 
-Justification des technologies et outils utilisés
-
-Suivi des tâches dans l'équipe réalisé avec Trello : <https://trello.com/invite/b/6914676875effe805916fb75/ATTI787a959b552291903e206cdf8a69b3aa22FDC4AC/kanban-equipe>
-
+* Installation avec le fichier *requirements.txt*
 
 ### Architecture du projet
 
@@ -59,40 +53,30 @@ par code-barres et choix de la langue (fr > en > fallback).
 
 1. Compréhension du contexte et cadrage
 
-* Lire attentivement la problématique métier fournie.
-* Décider du périmètre fonctionnel et des indicateurs analytiques à produire (Nutri-Score par marque, pays, anomalies, etc.).
+
 
 2. Collecte et préparation des données
 
-* Utiliser un export complet d’OpenFoodFacts (JSONL ou CSV).
-* Charger les données dans Spark (Bronze), en définissant explicitement le schéma technique.
-* Extraire et filtrer les champs clés (code-barres, nom, nutriments, tags, etc.).
+
 
 3. Nettoyage et normalisation
 
-* Nettoyer les types, les unités, harmoniser les formats (ex : g/mg, kcalkJ).
-* Supprimer les doublons par code-barres, en gardant la version la plus récente.
-* Prendre en compte la langue prioritaire (français) pour les noms.
+
 
 4. Modélisation des données
 
-* Mettre en place le modèle en étoile (dimensionnelles/faits) : dimension produits, marques, catégories, pays, temps.
-* Définir les clés, relations, et construire les scripts DDL de création des tables.
+
 
 5. Chargement dans le datamart
 
-* Finaliser la phase Gold (tables modélisées).
-* Charger les données dans MySQL via Spark JDBC en respectant les performances (batch, upsert, truncate-insert…).
 
 6. Qualité et reporting
 
-* Calculer les métriques de qualité : complétude, unicité, cohérence, anomalies détectées.
-* Documenter les choix et règles de gestion de la qualité avec journal des métriques.
+
 
 7. Analytique SQL
 
-* Proposer un jeu de requêtes analytiques répondant à des questions métiers.
-Exemples : top marques par Nutri-Score, heatmap par pays/catégorie, taux d’anomalies.
+
 
 8. Documentation et livrables
 
@@ -143,8 +127,10 @@ Donner les droits d'exécution au script de déploiement automatique :
 
 Lancer le script de déploiement automatique :
 
-`...`
+`. [NomScript].sh`
 
-### Débuggage/Vérifications
+### Vérifications/Tests
+
+
 
 ---
