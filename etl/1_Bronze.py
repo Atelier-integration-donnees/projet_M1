@@ -8,7 +8,6 @@ from pyspark.sql import functions as F
 from conf import settings
 
 def main():
-    # Configuration mémoire musclée pour le Big Data
     spark = SparkSession.builder \
         .appName("1_Bronze") \
         .config("spark.driver.memory", "8g") \
@@ -16,20 +15,19 @@ def main():
         .getOrCreate()
 
     print(f"\n{'='*60}")
-    print(">>> DÉMARRAGE : INGESTION ROBUSTE (Bronze Layer)")
+    print(">>> DÉMARRAGE : INGESTION (Bronze)")
     print(f"{'='*60}")
 
     try:
-        # 1. Lecture souple
+        # 1. Lecture
         print(">>> [1/4] Lecture du CSV (Mapping des colonnes)...")
-        # Note : On force inferSchema=False pour la performance (Exigence technique)
         df_raw = spark.read \
             .option("header", "true") \
             .option("delimiter", "\t") \
             .option("inferSchema", "false") \
             .csv(settings.RAW_PATH)
         
-        # 2. Sélection et Typage Explicite (Schema Enforcement)
+        # 2. Sélection et Typage Explicite
         print(">>> [2/4] Projection et Cast des types...")
         
         # AJOUT DES COLONNES MANQUANTES POUR LE SILVER (Langue & Sodium)
@@ -48,9 +46,8 @@ def main():
             
             # --- IDENTIFICATION & LANGUES ---
             F.col("product_name").cast("string"),
-            # AJOUT CRITIQUE pour Silver (Priorité Langue)
             safe_col("product_name_fr").cast("string").alias("product_name_fr"),
-            safe_col("product_name_en").cast("string").alias("product_name_en"), # <--- AJOUTÉ ICI (Anglais)
+            safe_col("product_name_en").cast("string").alias("product_name_en"),
             
             F.col("brands").cast("string"),
             F.col("categories_tags").cast("string"),
@@ -68,7 +65,7 @@ def main():
             
             # --- NUTRIMENTS (Pour Qualité & Harmonisation) ---
             F.col("energy-kcal_100g").cast("float").alias("energy_kcal_100g"),
-            safe_col("energy-kj_100g").cast("float").alias("energy_kj_100g"),    # <--- AJOUTÉ ICI (Kilojoules)
+            safe_col("energy-kj_100g").cast("float").alias("energy_kj_100g"), 
             
             F.col("sugars_100g").cast("float"),
             F.col("fat_100g").cast("float"),
@@ -87,9 +84,6 @@ def main():
             F.col("code").isNotNull() & F.col("product_name").isNotNull()
         )
         
-        # --- ECHANTILLONNAGE (Pour le DEV) ---
-        # NOTE M1 : Pour la mise en production réelle (Big Data), commentez cette ligne !
-        # Le sujet demande de traiter des "données massives".
         print(">>> [INFO] Mode Démonstration : Limitation à 50 000 lignes.")
         df_sampled = df_valid.limit(50000)
 
@@ -99,7 +93,7 @@ def main():
         # 4. Écriture
         print(f">>> [4/4] Sauvegarde Parquet : {settings.BRONZE_PATH}")
         df_sampled.write.mode("overwrite").parquet(settings.BRONZE_PATH)
-        print(">>> [SUCCÈS] Ingestion terminée.")
+        print(">>> Ingestion terminée.")
 
     except Exception as e:
         print(f"ERREUR : {e}")
