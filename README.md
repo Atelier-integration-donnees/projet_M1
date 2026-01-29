@@ -50,10 +50,11 @@ Chaque couche correspond à une étape fonctionnelle du pipeline et produit des 
 
 **Outils**
 
-* Apache Spark (PySpark 3.5.2)
-* Python 3.11.9 (version **nécessaire** pour l'utilisation de PySpark)
-* MySQL 8
-* Docker Desktop
+* Apache Spark (PySpark 3.5.2) *Cf. Section How to run*
+* Python 3.11.9 (version **nécessaire** pour l'utilisation de PySpark) <https://www.python.org/downloads/release/python-3119/>
+* MySQL 8 <https://dev.mysql.com/downloads/installer/>
+* Docker Desktop <https://docs.docker.com/desktop/setup/install/windows-install/>
+* Java 11.0.24 <https://www.oracle.com/fr/java/technologies/javase/jdk11-archive-downloads.html>
 * GitHub
 * IDE pour cloner le dépôt et exécuter les scripts
 
@@ -265,6 +266,12 @@ git clone https://github.com/Atelier-integration-donnees/projet_M1.git
 
 ```Bash
 pip install -r requirements.txt
+```
+
+**Installation d'Apache Spark (PySpark 3.5.2 pour l'ETL)**
+
+```Bash
+pip install pyspark==3.5.2
 ```
 
 **Lancer MySQL**
