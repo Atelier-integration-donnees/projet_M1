@@ -116,11 +116,6 @@ projet_M1/
 │   │
 │   ├── gold_metrics.json
 │   │   # Métriques de qualité finales après l’étape Gold
-│   │
-│   └── docs/
-│       ├── 1_Bronze.md
-│       └── 2_Silver.md
-│           # Documentation liée aux métriques
 │
 ├── sql/
 │   ├── ddl.sql
@@ -205,8 +200,6 @@ Sorties de qualité produites par le pipeline (Silver et Gold).
   * cohérence
 * **gold_metrics.json**
   Rapport de qualité final après chargement Gold / MySQL
-* **/docs**
-  Copies des documentations générées pour les couches Bronze et Silver.
 
 **/docs**
 Documentation fonctionnelle et décisionnelle du projet.
