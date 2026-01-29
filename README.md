@@ -267,7 +267,7 @@ pip install -r requirements.txt
 docker-compose up -d
 ```
 
-**Création du schéma**
+**Création du schéma** *(commande optionnelle, le script le fait déjà)*
 
 ```Bash
 mysql -u <user> -p <database> < sql/ddl.sql
