@@ -50,8 +50,8 @@ Chaque couche correspond à une étape fonctionnelle du pipeline et produit des 
 
 **Outils**
 
-* Apache Spark (PySpark)
-* Python
+* Apache Spark (PySpark 3.5.2)
+* Python 3.11.9 (version **nécessaire** pour l'utilisation de PySpark)
 * MySQL 8
 * Docker Desktop
 * GitHub
