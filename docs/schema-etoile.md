@@ -2,57 +2,74 @@
 
 **Vue d’ensemble**
 
-Le datamart OpenFoodFacts est modélisé selon un schéma en étoile (Star Schema), centré sur l’analyse nutritionnelle des produits alimentaires.
-* **Table de faits centrale** : fact_nutrition_snapshot
-* **Dimensions périphériques** :
-  * dim_product (SCD Type 2)
-  * dim_time
-  * dim_brand
-  * dim_category
-  * dim_country
-Les relations N–N entre produits et catégories/pays sont gérées via des tables de pont.
+Le datamart OpenFoodFacts suit un modèle décisionnel de type étoile, avec une normalisation partielle (snowflake) et des tables de pont pour gérer les relations N–N.
+
+* Table de faits centrale : `fact_nutrition_snapshot`
+* Dimensions directement reliées à la table de faits :
+  * `dim_time`
+  * `dim_product` (SCD Type 2)
+* Dimensions accessibles via la dimension produit :
+  * `dim_brand` (via `dim_product.brand_sk`)
+  * `dim_category` (via `bridge_product_category`)
+  * `dim_country` (via `bridge_product_country`)
 
 ---
 
 ## Schéma en étoile (représentation logique)
 
 ```
-                          dim_time
-                       (time_sk, date,
-                        year, month,
-                        week, iso_week)
-                              |
-                              |
-                              |
-        dim_brand         fact_nutrition_snapshot          dim_product (SCD2)
-     (brand_sk,           -------------------------     (product_sk, code,
-      brand_name)         fact_id (PK)                   product_name,
-           |              product_sk (FK) -------------- brand_sk (FK)
-           |              time_sk (FK) ----------------- effective_from
-           |              energy_kcal_100g               effective_to
-           |              fat_100g                        is_current
-           |              saturated_fat_100g             hash_diff
-           |              sugars_100g                    countries_multi
-           |              salt_100g
-           |              sodium_100g
-           |              proteins_100g
-           |              fiber_100g
-           |              nutriscore_grade
-           |              nova_group
-           |              ecoscore_grade
-           |              completeness_score
-           |              quality_issues_json
-                              |
-                              |
-                  --------------------------------
-                  |                              |
-         bridge_product_category        bridge_product_country
-         (product_sk, category_sk)     (product_sk, country_sk)
-                  |                              |
-             dim_category                   dim_country
-        (category_sk, code,             (country_sk, code,
-         name_fr, level,                 country_name_fr)
-         parent_category_sk)
+                                   dim_time
+                           (time_sk, date,
+                            year, month,
+                            week, iso_week)
+                                       |
+                                       |
+                               fact_nutrition_snapshot
+                               -------------------------
+                               fact_id (PK)
+                               product_sk (FK)
+                               time_sk (FK)
+                               energy_kcal_100g
+                               fat_100g
+                               saturated_fat_100g
+                               sugars_100g
+                               salt_100g
+                               proteins_100g
+                               fiber_100g
+                               sodium_100g
+                               nutriscore_grade
+                               nova_group
+                               ecoscore_grade
+                               completeness_score
+                               quality_issues_json
+                                       |
+                                       |
+                                dim_product (SCD2)
+                        (product_sk, code, product_name,
+                         brand_sk (FK),
+                         effective_from, effective_to,
+                         is_current, hash_diff,
+                         countries_multi)
+                           |                 |
+                           |                 |
+                        dim_brand      bridge_product_country
+                    (brand_sk,          (product_sk, country_sk)
+                     brand_name)               |
+                                               |
+                                            dim_country
+                                       (country_sk, country_code,
+                                        country_name_fr)
+
+                                       |
+                                       |
+                              bridge_product_category
+                              (product_sk, category_sk)
+                                       |
+                                       |
+                                  dim_category
+                           (category_sk, category_code,
+                            category_name_fr, level,
+                            parent_category_sk)
 ```
 
 ---
@@ -84,6 +101,8 @@ Les relations N–N entre produits et catégories/pays sont gérées via des tab
 * `dim_brand` : normalisation des marques
 * `dim_category` : classification hiérarchique des produits
 * `dim_country` : pays associés aux produits
+
+`dim_brand` est reliée à `dim_product` (et non directement à la table de faits), ce qui permet de centraliser les attributs descriptifs du produit et de gérer l’historisation SCD2.
 
 **Tables de pont (relations N–N)**
 * `bridge_product_category`
