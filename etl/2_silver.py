@@ -21,7 +21,6 @@ NUTRI_COLS = [
     "sugars_100g",
     "salt_100g",
     "proteins_100g",
-    # ### MODIF ICI : Ajout pour ne pas l'oublier dans le nettoyage ###
     "fiber_100g",
     "sodium_100g"
 ]
@@ -63,7 +62,7 @@ def main():
     run_date = datetime.now().isoformat()
 
     print("\n============================================================")
-    print(f">>> SILVER LAYER - CONFORMATION & QUALITÉ ({run_date})")
+    print(f">>> SILVER - CONFORMATION & QUALITÉ ({run_date})")
     print("============================================================\n")
 
     try:
@@ -73,7 +72,6 @@ def main():
         df = spark.read.parquet(BRONZE_PATH)
         input_rows = df.count()
 
-        # ### MODIF ICI : GESTION DES COLONNES MANQUANTES ###
         # Pour éviter le crash si une colonne n'existe pas dans le Bronze
         cols_security = {
             "fiber_100g": "float",
@@ -90,7 +88,7 @@ def main():
         # ###################################################
 
         # ------------------------------------------------------
-        # 2. DEDUP (BUSINESS KEY)
+        # 2. DEDUP
         # ------------------------------------------------------
         window = Window.partitionBy("code").orderBy(F.col("last_modified_t").desc())
         df = (
@@ -113,7 +111,6 @@ def main():
             )
         )
 
-        # ### MODIF ICI : Nettoyage étendu pour les Bridges Tables ###
         for col_text in ["product_name", "brands", "categories_tags", "countries_tags", "main_category"]:
             if col_text in df.columns:
                 df = df.withColumn(col_text, F.lower(F.trim(F.col(col_text))))
@@ -122,7 +119,6 @@ def main():
         # ------------------------------------------------------
         # 4. UNIT HARMONIZATION
         # ------------------------------------------------------
-        # ### MODIF ICI : Sécurité si energy_kj n'existe pas ###
         if "energy_kj_100g" in df.columns:
             df = df.withColumn(
                 "energy_kcal_100g",
@@ -138,7 +134,7 @@ def main():
         )
 
         # ------------------------------------------------------
-        # 5. NUTRITIONAL BOUNDS FIX (🔥 IMPORTANT)
+        # 5. NUTRITIONAL BOUNDS FIX 
         # ------------------------------------------------------
         bounds = {}
         for c in NUTRI_COLS:
@@ -156,7 +152,6 @@ def main():
         # ------------------------------------------------------
         # 6. COMPLETENESS SCORE
         # ------------------------------------------------------
-        # ### MODIF ICI : Inclus fiber_100g et ecoscore s'ils existent ###
         possible_cols = ["product_name", "brands", "nutriscore_grade", "ecoscore_grade"] + NUTRI_COLS
         completeness_cols = [c for c in possible_cols if c in df.columns]
         
@@ -194,7 +189,7 @@ def main():
         invalid_rows = df.filter(~F.col("is_valid")).count()
 
         # ------------------------------------------------------
-        # 9. METADATA (SCD2 READY ✅)
+        # 9. METADATA (SCD2 READY)
         # ------------------------------------------------------
         df = (
             df.withColumn("effective_from", F.current_timestamp())
@@ -204,7 +199,6 @@ def main():
         # ------------------------------------------------------
         # 10. HASH DIFF
         # ------------------------------------------------------
-        # ### MODIF ICI : On sécurise la liste des colonnes pour le hash ###
         cols_for_hash = ["code", "product_name", "brands", "nutriscore_grade"] + \
                         [c for c in NUTRI_COLS if c in df.columns]
         
@@ -216,20 +210,18 @@ def main():
         # ------------------------------------------------------
         # 11. SELECT FINAL
         # ------------------------------------------------------
-        # ### MODIF ICI : On ajoute les colonnes manquantes (fiber, ecoscore, tags) ###
         final_columns = [
             "code", "product_name", "product_name_fr", "product_name_en",
             "brands", "categories_tags", "countries_tags", "main_category",
             "last_modified_t", "created_t",
-            "nutriscore_grade", "nova_group", "ecoscore_grade",  # Ajout ecoscore
+            "nutriscore_grade", "nova_group", "ecoscore_grade",  
             "completeness_score",
             "energy_kcal_100g", "energy_kj_100g",
             "sugars_100g", "fat_100g", "saturated_fat_100g",
-            "salt_100g", "sodium_100g", "proteins_100g", "fiber_100g", # Ajout fiber
+            "salt_100g", "sodium_100g", "proteins_100g", "fiber_100g", 
             "quality_issues_struct", "quality_issues_json",
             "is_valid", "effective_from", "hash_diff"
         ]
-        # On ne sélectionne que ce qui existe vraiment pour éviter erreur
         sel_cols = [c for c in final_columns if c in df.columns]
         
         df = df.select(*sel_cols)
@@ -250,7 +242,7 @@ def main():
         total_fields = total_rows * len(completeness_cols)
         coverage_score = (non_null_count / total_fields) * 100
 
-        # Note : Pour les metrics, on simplifie car quality_issues_struct dépend des colonnes présentes
+        # Pour les metrics, on simplifie car quality_issues_struct dépend des colonnes présentes
         # On garde ton code original mais on le protège :
         try:
             df = df.withColumn(
@@ -280,10 +272,10 @@ def main():
         }
         save_metrics(metrics)
 
-        print("✅ SILVER terminé avec succès")
+        print(" SILVER terminé avec succès")
 
     except Exception as e:
-        print("❌ ERREUR SILVER :", e)
+        print(" ERREUR SILVER :", e)
         raise
     finally:
         spark.stop()
