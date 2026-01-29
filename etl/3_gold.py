@@ -1,7 +1,6 @@
 # ========================================================================
-# GOLD LAYER — VERSION FINALE (FIX STRICT CHAR-1)
+# GOLD
 # ========================================================================
-
 import os, sys, shutil, json, time
 from datetime import datetime
 from pyspark.sql import SparkSession, functions as F
@@ -29,7 +28,7 @@ try:
     jar_files = [f for f in os.listdir(jars_dir) if f.endswith(".jar")]
     JAR_PATH = os.path.join(jars_dir, jar_files[0])
 except:
-    print("⚠️ Attention: JAR introuvable, vérifiez le dossier jars/")
+    print("Attention: JAR introuvable, vérifiez le dossier jars/")
     JAR_PATH = ""
 
 DB_HOST, DB_PORT = "localhost", "3309"
@@ -57,7 +56,7 @@ def insert_ignore(sql, rows):
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"⚠️ SQL Warning (Insert Ignore): {e}")
+        print(f"SQL Warning (Insert Ignore): {e}")
 
 # ========================================================================
 # 3. SPARK SESSION
@@ -224,13 +223,12 @@ def main():
         write_jdbc(to_insert, "dim_product")
         
         # ----------------------------------------------------------------
-        # D. FACT TABLE (LE FIX STRICT EST ICI)
+        # D. FACT TABLE
         # ----------------------------------------------------------------
         print("--- [3/4] Fact Table ---")
         
         dim_prod_fresh = read_jdbc(spark, "dim_product").select("product_sk", "hash_diff")
 
-        # === FIX CRITIQUE FACT TABLE ===
         # Si nutriscore n'est pas dans [a,b,c,d,e], on envoie NULL.
         # Cela garantit que ça rentre dans un CHAR(1).
         nutri_strict_filter = when(F.lower(col("nutriscore_grade")).isin(["a", "b", "c", "d", "e"]), F.lower(col("nutriscore_grade"))).otherwise(lit(None))
@@ -241,7 +239,7 @@ def main():
                 col("energy_kcal_100g"), col("fat_100g"), col("sugars_100g"),
                 col("proteins_100g"), col("salt_100g"), col("fiber_100g"),
                 
-                # ICI : ON FORCE LA COMPATIBILITÉ CHAR(1)
+                # ON FORCE LA COMPATIBILITÉ CHAR(1)
                 nutri_strict_filter.alias("nutriscore_grade"),
                 
                 "nova_group", 
@@ -280,7 +278,7 @@ def main():
         with open(METRICS_PATH, "a") as f:
             f.write(json.dumps(metrics) + "\n")
 
-        print(f"\n✅ GOLD terminé avec succès en {metrics['duration']} sec ! 🏆")
+        print(f"\n✅ GOLD terminé avec succès en {metrics['duration']} sec ! ")
 
     except Exception as e:
         print(f"\n❌ ERREUR GOLD: {e}")
