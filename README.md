@@ -255,6 +255,12 @@ Tests unitaires pour chaque couche (Bronze, Silver, Gold).
 
 ## How to run
 
+**Clôner le repo GitHub**
+
+```Bash
+git clone https://github.com/Atelier-integration-donnees/projet_M1.git
+```
+
 **Installation des dépendances**
 
 ```Bash
@@ -285,6 +291,12 @@ spark-submit etl/3_gold.py
 
 ```Bash
 mysql -u <user> -p <database> < sql/queries_analysis.sql
+```
+
+**Affichage du dashboard**
+
+```Bash
+py -3.11 -m streamlit run dashboard.py
 ```
 
 ---
